@@ -1,0 +1,22 @@
+from pdfminer.high_level import extract_text
+from pdfminer.layout import LAParams, LTTextBoxHorizontal
+
+def find_word_position(pdf_path, target_word):
+    text = extract_text(pdf_path)
+    word_positions = []
+    
+    for page_num, page_text in enumerate(text.split('\n\n')):
+        for obj in PDFPage.get_pages(open(pdf_path, 'rb'), caching=True, check_extractable=True):
+            if isinstance(obj, LTTextBoxHorizontal):
+                for line in obj:
+                    if target_word in line.get_text():
+                        x0, y0, x1, y1 = line.bbox
+                        word_positions.append((page_num+1, x0, y0))
+    
+    return word_positions
+
+# Przykładowe użycie
+pdf_path = 'sciezka/do/pliku.pdf'
+target_word = 'szukane_słowo'
+positions = find_word_position(pdf_path, target_word)
+print("Pozycja słowa '{}' na stronie: {}".format(target_word, positions))
