@@ -20,3 +20,22 @@ pdf_path = 'sciezka/do/pliku.pdf'
 target_word = 'szukane_słowo'
 positions = find_word_position(pdf_path, target_word)
 print("Pozycja słowa '{}' na stronie: {}".format(target_word, positions))
+
+import pdfplumber
+
+def find_word_positions(pdf_path, target_word):
+    word_positions = []
+    with pdfplumber.open(pdf_path) as pdf:
+        for page_num in range(len(pdf.pages)):
+            page = pdf.pages[page_num]
+            for word in page.extract_words():
+                if target_word in word['text']:
+                    x0, y0, x1, y1 = word['x0'], word['top'], word['x1'], word['bottom']
+                    word_positions.append((page_num+1, x0, y0))
+    return word_positions
+
+# Przykładowe użycie
+pdf_path = 'sciezka/do/pliku.pdf'
+target_word = 'szukane_słowo'
+positions = find_word_positions(pdf_path, target_word)
+print("Pozycje słowa '{}' na stronie: {}".format(target_word, positions))
